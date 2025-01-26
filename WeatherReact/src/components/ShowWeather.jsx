@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { counterContext } from "./Context";
 import ApiCall from "./hooks/ApiCall";
+import { icon } from "../components/hooks/Functions";
+import { convertToCelsius } from "../components/hooks/Functions";
 export default function ShowWeather() {
   // * API KEY
   const KEY = import.meta.env.VITE_API_KEY;
@@ -10,30 +12,14 @@ export default function ShowWeather() {
     `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${KEY}`
   );
 
-  function icon(weather) {
-    const iconMap = {
-      Clouds: "☁️",
-      Clear: "☀️",
-      Mist: "🌧️",
-      Rain: "⛈️",
-      Haze: "🌨️",
-    };
-
-    return iconMap[weather] || "";
-  }
-
   function backClick() {
     setDisplay(false);
     setLocation(null);
   }
 
-  const convertToCelsius = (kelvin) => {
-    return kelvin - 273.15;
-  };
-
   return (
     <>
-      {result && (
+      {result && result.cod === 200 ? (
         <div className="w-full h-screen flex flex-col justify-center items-center absolute inset-0">
           <div className="shadow-2xl w-[350px] h-[450px] bg-white/10 backdrop-filter z-10 backdrop-blur-2xl bg-opacity-30 flex rounded-xl flex-col font-poppins text-[#feffff]">
             <div className="w-full h-auto flex-1 flex flex-col justify-center items-center gap-5">
@@ -60,6 +46,18 @@ export default function ShowWeather() {
           </div>
           <button
             className="-mb-10 mt-6 w-40 h-14 bg-gradient-to-r from-blue-600 to-violet-600 font-poppins text-lg text-white rounded-lg tracking-widest z-10"
+            onClick={backClick}
+          >
+            Back
+          </button>
+        </div>
+      ) : (
+        <div className="w-full h-screen flex flex-col justify-center items-center absolute inset-0 z-10">
+          <div className="text-white text-3xl font-medium">
+            Unable to fetch weather data. Please check the location.
+          </div>
+          <button
+            className="mt-6 w-40 h-14 bg-gradient-to-r from-blue-600 to-violet-600 font-poppins text-lg text-white rounded-lg tracking-widest"
             onClick={backClick}
           >
             Back
